@@ -1,4 +1,4 @@
-import PageObject.MainPage;
+import pageobject.MainPage;
 import io.qameta.allure.Description;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
@@ -10,8 +10,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
