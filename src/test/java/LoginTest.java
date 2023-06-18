@@ -1,15 +1,16 @@
-import pageobject.MainPage;
 import io.qameta.allure.Description;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import model.CredentialModel;
 import model.UserModel;
 import org.apache.commons.lang3.RandomStringUtils;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import pageobject.MainPage;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,6 +22,7 @@ public class LoginTest extends BaseTest {
     private UserModel user;
     private CredentialModel credential;
     private String accessToken = "";
+    private WebDriverWait wait = new WebDriverWait(driver, 10);
 
     @BeforeEach
     public void createUser() {
@@ -59,8 +61,8 @@ public class LoginTest extends BaseTest {
     public void accountSignInViaMainButtonTest() {
         page = new MainPage(driver);
         page.getLogIn().click();
-        page.getUserEmail().sendKeys(user.getEmail());
-        page.getUserPassword().sendKeys(user.getPassword());
+        page.getUserEmailSignIn().sendKeys(user.getEmail());
+        page.getUserPasswordSignIn().sendKeys(user.getPassword());
         page.getSignInButton().click();
         assertTrue(page.getHeaderBurger().isDisplayed());
     }
@@ -70,8 +72,8 @@ public class LoginTest extends BaseTest {
     public void accountSignInViaPersonalPageButtonTest() {
         page = new MainPage(driver);
         page.getPersonalAccount().click();
-        page.getUserEmail().sendKeys(user.getEmail());
-        page.getUserPassword().sendKeys(user.getPassword());
+        page.getUserEmailSignIn().sendKeys(user.getEmail());
+        page.getUserPasswordSignIn().sendKeys(user.getPassword());
         page.getSignInButton().click();
         assertTrue(page.getHeaderBurger().isDisplayed());
     }
@@ -83,8 +85,8 @@ public class LoginTest extends BaseTest {
         page.getPersonalAccount().click();
         page.getRegistration().click();
         page.getLogInAfterReg().click();
-        page.getUserEmail().sendKeys(user.getEmail());
-        page.getUserPassword().sendKeys(user.getPassword());
+        page.getUserEmailSignIn().sendKeys(user.getEmail());
+        page.getUserPasswordSignIn().sendKeys(user.getPassword());
         page.getSignInButton().click();
         assertTrue(page.getHeaderBurger().isDisplayed());
     }
@@ -96,8 +98,8 @@ public class LoginTest extends BaseTest {
         page.getPersonalAccount().click();
         page.getRestorePassword().click();
         page.getLogInRestoreForm().click();
-        page.getUserEmail().sendKeys(user.getEmail());
-        page.getUserPassword().sendKeys(user.getPassword());
+        page.getUserEmailSignIn().sendKeys(user.getEmail());
+        page.getUserPasswordSignIn().sendKeys(user.getPassword());
         page.getSignInButton().click();
         assertTrue(page.getHeaderBurger().isDisplayed());
     }
@@ -111,15 +113,21 @@ public class LoginTest extends BaseTest {
                 driver.getCurrentUrl());
     }
 
-    @Description("Переход по клику на <Конструктор> и на логотип Stellar Burgers")
+    @Description("Переход по клику на <Конструктор>")
     @Test
-    public void redirectToConstructorAndLogoTest() {
+    public void redirectToConstructorTest() {
         page = new MainPage(driver);
         page.getPersonalAccount().click();
         page.getConstructorButton().click();
         assertTrue(page.getHeaderBurger().isDisplayed());
         assertEquals("https://stellarburgers.nomoreparties.site/",
                 driver.getCurrentUrl());
+    }
+
+    @Description("Нажатие на логотип Stellar Burgers")
+    @Test
+    public void redirectToLogoTest() {
+        page = new MainPage(driver);
         page.getPersonalAccount().click();
         page.getLogo().click();
         assertTrue(page.getHeaderBurger().isDisplayed());
@@ -132,8 +140,8 @@ public class LoginTest extends BaseTest {
     public void signOutTest() {
         page = new MainPage(driver);
         page.getLogIn().click();
-        page.getUserEmail().sendKeys(user.getEmail());
-        page.getUserPassword().sendKeys(user.getPassword());
+        page.getUserEmailSignIn().sendKeys(user.getEmail());
+        page.getUserPasswordSignIn().sendKeys(user.getPassword());
         page.getSignInButton().click();
         assertTrue(page.getHeaderBurger().isDisplayed());
         page.getPersonalAccount().click();
@@ -141,17 +149,33 @@ public class LoginTest extends BaseTest {
         assertTrue(page.getUserName().isDisplayed());
     }
 
-    @Description("Проверка перехода по разделам <Булки>, <Соусы>, <Начинки>")
+    @Description("Проверка перехода к разделу <Булки>")
     @Test
-    public void constructorScrollTest() {
+    public void constructorScrollBunsTest() {
         page = new MainPage(driver);
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("window.scrollBy(0,250)", "");
-        page.getBunsButton().click();
+        wait.until(ExpectedConditions.elementToBeClickable(page.getBunsButton()));
+        // В другой реализации время от времени получаем - ElementClickInterceptedException
+        ((JavascriptExecutor)driver).executeScript("arguments[0].click();", page.getBunsButton());
         assertTrue(page.getBunsBlock().isDisplayed());
-        page.getSoucesButton().click();
+    }
+
+    @Description("Проверка перехода к разделу <Соусы>")
+    @Test
+    public void constructorScrollSoucesTest() {
+        page = new MainPage(driver);
+        wait.until(ExpectedConditions.elementToBeClickable(page.getSoucesButton()));
+        // В другой реализации время от времени получаем - ElementClickInterceptedException
+        ((JavascriptExecutor)driver).executeScript("arguments[0].click();", page.getSoucesButton());
         assertTrue(page.getSoucesBlock().isDisplayed());
-        page.getIngredientsButton().click();
+    }
+
+    @Description("Проверка перехода к разделу <Начинки>")
+    @Test
+    public void constructorScrollIngredientTest() {
+        page = new MainPage(driver);
+        wait.until(ExpectedConditions.elementToBeClickable(page.getIngredientsButton()));
+        // В другой реализации время от времени получаем - ElementClickInterceptedException
+        ((JavascriptExecutor)driver).executeScript("arguments[0].click();", page.getIngredientsButton());
         assertTrue(page.getIngredientsBlock().isDisplayed());
     }
 }
